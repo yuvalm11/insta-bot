@@ -1,0 +1,97 @@
+name: Run Daily - Graph API
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1 Checkout private repo
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+
+      # 2 Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3 Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pillow requests
+
+      # 4 Prepare image
+      - name: Prepare image
+        run: python main.py prepare
+
+      # 5 Commit uploaded image to private repo archive
+      - name: Archive uploaded image in private repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "[YOUR BOT'S EMAIL]"
+          git add .
+          git commit -m "Move uploaded image to archive" || echo "No changes to commit"
+          git push
+
+      # 6 Set up SSH for public repo
+      - name: Set up SSH for public repo
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key:
+
+      # 7 Checkout public repo
+      - name: Checkout public repo
+        uses: actions/checkout@v4
+        with:
+          repository: <PUBLIC REPO FOR TEMP HOSTING>
+          ssh-key: true
+          path: public_repo
+
+      # 8 Copy selected image to public repo
+      - name: Copy selected image to public repo
+        run: |
+          mkdir -p public_repo/uploads
+          IMAGE_PATH=$(cut -d'|' -f1 upload_meta.txt)
+          REL_PATH=$(cut -d'|' -f2 upload_meta.txt)
+          DEST_DIR="public_repo/uploads/$(dirname "$REL_PATH")"
+          mkdir -p "$DEST_DIR"
+          BASENAME=$(basename "$REL_PATH")
+          cp "$IMAGE_PATH" "$DEST_DIR/$BASENAME"
+          echo "Copied $IMAGE_PATH → $DEST_DIR/$BASENAME"
+
+      # 9 Commit and push to public repo
+      - name: Commit and push to public repo
+        run: |
+          cd public_repo
+          git config user.name "github-actions[bot]"
+          git config user.email "[YOUR BOT'S EMAIL]"
+          git add .
+          git commit -m "Add uploaded image" || echo "No changes to commit"
+          git push
+
+      # 10 Wait for GitHub Pages to update
+      - name: Wait for GitHub Pages
+        run: sleep 60
+
+      # 11 Publish image to Instagram
+      - name: Publish to Instagram
+        env:
+          IG_ACCESS_TOKEN: 
+          IG_BUSINESS_ID: 
+          PUBLIC_IMAGE_BASE_URL:
+        run: python main.py publish
+
+      # 12 Clean up public repo
+      - name: Clean up public repo
+        run: |
+          cd public_repo
+          rm -rf uploads/*
+          git add uploads
+          git commit -m "Clean up uploaded images" || echo "Nothing to delete"
+          git push
