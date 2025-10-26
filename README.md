@@ -2,7 +2,7 @@
 
 Check out my photos on Instagram before you start reading!
 
-![medium-filled-instagram](medium/filled/instagram.svg) [@everyday__ppl](https://www.instagram.com/everyday__ppl/)
+[![small-filled-instagram](https://raw.githubusercontent.com/CLorant/readme-social-icons/main/small/filled/instagram.svg) @everyday__ppl](https://www.instagram.com/everyday__ppl/)
 
 As a hobbyist photographer, I enjoy taking pictures in my free time and I wanted to start sharing them on Instagram. The process of selecting photos, editing posts, and uploading them to Instagram is a bit tedious, so I decided to automate it.
 
