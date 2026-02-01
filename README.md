@@ -6,9 +6,9 @@ Check out my photos on Instagram before you start reading!
 
 As a hobbyist photographer, I enjoy taking pictures in my free time and I wanted to start sharing them on Instagram. The process of selecting photos, editing posts, and uploading them to Instagram is a bit tedious, so I decided to automate it.
 
-I used the [Instagram Graph API](https://developers.facebook.com/docs/instagram-api), some Python libraries, and a GitHub Actions workflow to automate the process.
+I used the [Instagram Graph API](https://developers.facebook.com/docs/instagram-api), some simple Python code, and a GitHub Actions workflow to automate the process.
 
-I now can simply dump all my photos in a folder and let the workflow take care of the rest.
+I now can simply dump all my photos in a folder and have the workflow take care of the rest.
 
 ## Workflow
 
